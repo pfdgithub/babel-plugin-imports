@@ -1,0 +1,47 @@
+{
+  "plugins": [
+    [
+      "imports",
+      {
+        "ruleExtend": "ruleExtend.js",
+        "rules": [
+          {
+            "moduleName": "^react-router$", // 模块名称
+            "importType": { // 导入类型
+              "importSpecifier": {
+                "transforms": [
+                  {
+                    "newImportType": "ImportDefaultSpecifier", // 新导入类型 <ImportSpecifier|ImportDefaultSpecifier|ImportNamespaceSpecifier>
+                    "newModuleName": "[moduleName]/lib/[importedName]", // 新模块名称
+                    "newImportedName": "[importedName]", // 新导入名称
+                    "newLocalName": "[localName]" // 新本地名称
+                  }
+                ]
+              },
+              // "importDefaultSpecifier": {
+              //   "transforms": [
+              //     {
+              //       "newImportType": "[importType]",
+              //       "newModuleName": "[moduleName]",
+              //       "newImportedName": "[importedName]",
+              //       "newLocalName": "[localName]"
+              //     }
+              //   ]
+              // },
+              "importNamespaceSpecifier": {
+                "transforms": [
+                  {
+                    // "newImportType": "[importType]",
+                    // "newModuleName": "[moduleName]",
+                    "newImportedName": "[importedName]",
+                    "newLocalName": "[localName]"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  ]
+}
