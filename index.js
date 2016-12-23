@@ -36,7 +36,7 @@ module.exports = () => {
         }
 
         // 主业务逻辑
-        let appendNewImportDeclarations = (testModuleName, getTransforms) => {
+        let appendNewImportDeclarations = (ruleData, testModuleName, getTransforms) => {
           // 测试模块名称
           if (testModuleName(moduleName)) {
             // 遍历导入类型枚举
@@ -77,21 +77,19 @@ module.exports = () => {
                       }
 
                       // 整合新规则对象属性值
-                      let newImportType = newTransform.newImportType ? newTransform.newImportType : importType; // 新 导入类型
-                      let newTypePropName = Type2Property[newImportType]; // 新 导入类型对应的属性名称
-                      let newModuleName = newTransform.newModuleName ? newTransform.newModuleName : moduleName; // 新 模块名称
-                      let newImportedName = newTransform.newImportedName ? newTransform.newImportedName : importedName; // 新 导入名称
-                      let newLocalName = newTransform.newLocalName ? newTransform.newLocalName : localName; // 新 本地名称
+                      let newImportType = newTransform.newImportType ? newTransform.newImportType : importType; // 新导入类型
+                      let newTypePropName = Type2Property[newImportType]; // 新导入类型对应的属性名称
+                      let newModuleName = newTransform.newModuleName ? newTransform.newModuleName : moduleName; // 新模块名称
+                      let newImportedName = newTransform.newImportedName ? newTransform.newImportedName : importedName; // 新导入名称
+                      let newLocalName = newTransform.newLocalName ? newTransform.newLocalName : localName; // 新本地名称
 
-                      // 检查新旧值
-                      if (testModuleName(newModuleName)) {
-                        throw new Error('newModuleName must not match moduleName');
-                      }
+                      // 检查新导入类型
                       if (!ImportTypeEnum[newImportType]) {
                         throw new Error(`newImportType must is "${ImportTypeEnum.ImportSpecifier}" or "${ImportTypeEnum.ImportDefaultSpecifier}" or "${ImportTypeEnum.ImportNamespaceSpecifier}"`);
                       }
-                      if (importType === ImportTypeEnum.ImportSpecifier && newImportType === ImportTypeEnum.ImportSpecifier) {
-                        throw new Error(`${ImportTypeEnum.ImportSpecifier} must not transform to ${ImportTypeEnum.ImportSpecifier}`);
+                      // 检查新模块名称
+                      if (!ruleData.ignoreCheckNewModuleName && testModuleName(newModuleName)) {
+                        throw new Error('newModuleName must not match moduleName');
                       }
 
                       // 新 importDeclaration 对象
@@ -121,7 +119,9 @@ module.exports = () => {
           // 遍历规则配置
           rules.forEach((rule) => {
             if (rule && rule.moduleName && rule.importType) {
-              appendNewImportDeclarations((moduleName) => {
+              appendNewImportDeclarations({
+                ignoreCheckNewModuleName: rule.ignoreCheckNewModuleName // 忽略检查新模块名称
+              }, (moduleName) => {
                 // 测试模块名称
                 return (new RegExp(rule.moduleName)).test(moduleName);
               }, (importType, typePropName, moduleName, importedName, localName) => {
@@ -136,7 +136,9 @@ module.exports = () => {
 
         // 存在规则扩展
         if (ruleExtend && typeof (ruleExtend.moduleName) === 'function' && ruleExtend.importType) {
-          appendNewImportDeclarations((moduleName) => {
+          appendNewImportDeclarations({
+            ignoreCheckNewModuleName: ruleExtend.ignoreCheckNewModuleName // 忽略检查新模块名称
+          }, (moduleName) => {
             // 测试模块名称
             return ruleExtend.moduleName(moduleName);
           }, (importType, typePropName, moduleName, importedName, localName) => {

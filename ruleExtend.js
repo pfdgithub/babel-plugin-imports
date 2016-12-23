@@ -1,4 +1,5 @@
 var ruleExtend = {
+  ignoreCheckNewModuleName: false, // ！！警告：规则配置不当可能会造成死循环！！ 忽略检查新模块名称
   moduleName: function (moduleName) {
     return (new RegExp('^react-router$')).test(moduleName);
   },
