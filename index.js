@@ -137,7 +137,8 @@ module.exports = () => {
         // 存在规则扩展
         if (ruleExtend && typeof (ruleExtend.moduleName) === 'function' && ruleExtend.importType) {
           appendNewImportDeclarations({
-            ignoreCheckNewModuleName: ruleExtend.ignoreCheckNewModuleName // 忽略检查新模块名称
+            ignoreCheckNewModuleName: typeof (ruleExtend.ignoreCheckNewModuleName) === 'function'
+              ? ruleExtend.ignoreCheckNewModuleName(moduleName) : false // 忽略检查新模块名称
           }, (moduleName) => {
             // 测试模块名称
             return ruleExtend.moduleName(moduleName);

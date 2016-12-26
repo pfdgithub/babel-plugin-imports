@@ -20,10 +20,10 @@ npm install --save-dev babel-plugin-imports
     [
       "imports",
       {
-        "ignoreCheckNewModuleName": false, // ！！警告：规则配置不当可能会造成死循环！！ 忽略检查新模块名称
         "ruleExtend": "ruleExtend.js",
         "rules": [
           {
+            // "ignoreCheckNewModuleName": false, // ！！警告：规则配置不当可能会造成死循环！！ 忽略检查新模块名称
             "moduleName": "^react-router$", // 模块名称
             "importType": { // 导入类型
               "importSpecifier": {
@@ -69,13 +69,15 @@ ruleExtend.js
 
 ```javascript
 var ruleExtend = {
-  ignoreCheckNewModuleName: false, // ！！警告：规则配置不当可能会造成死循环！！ 忽略检查新模块名称
-  moduleName: function (moduleName) {
+  // ignoreCheckNewModuleName: (moduleName) => { // ！！警告：规则配置不当可能会造成死循环！！ 忽略检查新模块名称
+  //   return false;
+  // },
+  moduleName: (moduleName) => {
     return (new RegExp('^react-router$')).test(moduleName);
   },
   importType: {
     importSpecifier: {
-      transforms: function (importType, moduleName, importedName, localName) {
+      transforms: (importType, moduleName, importedName, localName) => {
         return [
           {
             newImportType: 'ImportDefaultSpecifier', // 新导入类型 <ImportSpecifier|ImportDefaultSpecifier|ImportNamespaceSpecifier>
@@ -87,7 +89,7 @@ var ruleExtend = {
       }
     },
     // importDefaultSpecifier: {
-    //   transforms: function (importType, moduleName, importedName, localName) {
+    //   transforms: (importType, moduleName, importedName, localName) => {
     //     return [
     //       {
     //         newImportType: importType,
@@ -99,19 +101,20 @@ var ruleExtend = {
     //   }
     // },
     importNamespaceSpecifier: {
-      transforms: function (importType, moduleName, importedName, localName) {
+      transforms: (importType, moduleName, importedName, localName) => {
         return [
           {
             // newImportType: importType,
             // newModuleName: moduleName,
             newImportedName: importedName,
-            newLocalName: localName 
+            newLocalName: localName
           }
         ];
       }
     }
   }
 }
+
 module.exports = ruleExtend;
 ```
 
