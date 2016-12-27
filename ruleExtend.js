@@ -1,4 +1,4 @@
-var ruleExtend = {
+let ruleExtend = {
   // ignoreCheckNewModuleName: (moduleName) => { // ！！警告：规则配置不当可能会造成死循环！！ 忽略检查新模块名称
   //   return false;
   // },
