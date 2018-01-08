@@ -1,4 +1,3 @@
-let bTypes = require('babel-types');
 let gPath = require('path');
 
 let rules = undefined; // 插件规则配置
@@ -15,7 +14,9 @@ let Type2Property = { // 类型枚举对应的属性名称
   ImportNamespaceSpecifier: "importNamespaceSpecifier",
 };
 
-module.exports = () => {
+module.exports = (babel) => {
+  let bTypes = babel.types;
+
   return {
     visitor: {
       ImportDeclaration: (path, state) => {

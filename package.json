@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-imports",
-  "version": "0.2.3",
-  "description": "import { importedName as localName } from 'moduleName'; => import { importedName as localName } from 'moduleName/lib/importedName';",
+  "version": "0.2.4",
+  "description": "ES6 模块导入规则转换，支持“命名导入”、“默认导入”和“命名空间导入”三种规则，并支持一对多转换。",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,7 +13,9 @@
   "keywords": [
     "babel",
     "plugin",
-    "import"
+    "import",
+    "module",
+    "transform"
   ],
   "author": "pfdnpm",
   "license": "MIT",
@@ -21,8 +23,6 @@
     "url": "https://github.com/pfdgithub/babel-plugin-imports/issues"
   },
   "homepage": "https://github.com/pfdgithub/babel-plugin-imports",
-  "dependencies": {
-    "babel-types": "^6.21.0"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }

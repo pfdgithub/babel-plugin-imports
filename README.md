@@ -2,7 +2,11 @@
 
 [![npm version](https://badge.fury.io/js/babel-plugin-imports.svg)](http://badge.fury.io/js/babel-plugin-imports) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
 
-import { importedName as localName } from 'moduleName'; => import { importedName as localName } from 'moduleName/lib/importedName';  
+ES6 模块导入规则转换，支持“命名导入”、“默认导入”和“命名空间导入”三种规则，并支持一对多转换。  
+如：  
+import { importedName as localName } from 'moduleName'; => import { newImportedName as newLocalName } from 'newModuleName';  
+import localName from 'moduleName'; => import { default as newLocalName } from 'newModuleName';  
+import * as localName from 'moduleName'; => import newLocalName from 'newModuleName';
 
 ## Installation
 
@@ -12,110 +16,37 @@ npm install --save-dev babel-plugin-imports
 
 ## Usage
 
-.babelrc  
+转换规则可以直接在 .babelrc 文件中配置，也可以在 ruleExtend.js 文件中配置。  
 
-```javascript
-{
-  "plugins": [
-    [
-      "imports",
-      {
-        "ruleExtend": "ruleExtend.js",
-        "rules": [
-          {
-            // "ignoreCheckNewModuleName": false, // ！！警告：规则配置不当可能会造成死循环！！ 忽略检查新模块名称
-            "moduleName": "^react-router$", // 模块名称
-            "importType": { // 导入类型
-              "importSpecifier": {
-                "transforms": [
-                  {
-                    "newImportType": "ImportDefaultSpecifier", // 新导入类型 <ImportSpecifier|ImportDefaultSpecifier|ImportNamespaceSpecifier>
-                    "newModuleName": "[moduleName]/lib/[importedName]", // 新模块名称
-                    "newImportedName": "[importedName]", // 新导入名称
-                    "newLocalName": "[localName]" // 新本地名称
-                  }
-                ]
-              },
-              // "importDefaultSpecifier": {
-              //   "transforms": [
-              //     {
-              //       "newImportType": "[importType]",
-              //       "newModuleName": "[moduleName]",
-              //       "newImportedName": "[importedName]",
-              //       "newLocalName": "[localName]"
-              //     }
-              //   ]
-              // },
-              "importNamespaceSpecifier": {
-                "transforms": [
-                  {
-                    // "newImportType": "[importType]",
-                    // "newModuleName": "[moduleName]",
-                    "newImportedName": "[importedName]",
-                    "newLocalName": "[localName]"
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      }
-    ]
-  ]
-}
+Rules:  
+[.babelrc 配置示例](.babelrc)  
+[ruleExtend.js 配置示例](ruleExtend.js)  
+
+Before:  
+``` javascript
+// ImportSpecifier
+import { importedName_1 as localName_1, importedName_2 } from 'moduleName';
+
+// ImportDefaultSpecifier
+import localName_3 from 'moduleName';
+
+// ImportNamespaceSpecifier
+import * as localName_4 from 'moduleName';
 ```
 
-ruleExtend.js  
+After:  
+``` javascript
+// ImportSpecifier
+import localName_1 from 'moduleName/path/importedName_1';
+import importedName_2 from 'moduleName/path/importedName_2';
 
-```javascript
-let ruleExtend = {
-  // ignoreCheckNewModuleName: (moduleName) => { // ！！警告：规则配置不当可能会造成死循环！！ 忽略检查新模块名称
-  //   return false;
-  // },
-  moduleName: (moduleName) => {
-    return (new RegExp('^react-router$')).test(moduleName);
-  },
-  importType: {
-    importSpecifier: {
-      transforms: (importType, moduleName, importedName, localName) => {
-        return [
-          {
-            newImportType: 'ImportDefaultSpecifier', // 新导入类型 <ImportSpecifier|ImportDefaultSpecifier|ImportNamespaceSpecifier>
-            newModuleName: `${moduleName}/lib/${importedName}`, // 新模块名称
-            newImportedName: importedName, // 新导入名称
-            newLocalName: localName // 新本地名称
-          }
-        ];
-      }
-    },
-    // importDefaultSpecifier: {
-    //   transforms: (importType, moduleName, importedName, localName) => {
-    //     return [
-    //       {
-    //         newImportType: importType,
-    //         newModuleName: moduleName,
-    //         newImportedName: importedName,
-    //         newLocalName: localName 
-    //       }
-    //     ];
-    //   }
-    // },
-    importNamespaceSpecifier: {
-      transforms: (importType, moduleName, importedName, localName) => {
-        return [
-          {
-            // newImportType: importType,
-            // newModuleName: moduleName,
-            newImportedName: importedName,
-            newLocalName: localName
-          }
-        ];
-      }
-    }
-  }
-}
+// ImportDefaultSpecifier
 
-module.exports = ruleExtend;
+import { default as localName_3 } from 'moduleName/path/';
+
+// ImportNamespaceSpecifier
+
+import localName_4 from 'moduleName/path/';
 ```
 
 ## License
